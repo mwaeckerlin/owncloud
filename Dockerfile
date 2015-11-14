@@ -3,7 +3,7 @@
 # docker run --rm --name owncloud -it -p 80:80 --link owncloud-mysql:mysql ubuntu bash
 FROM ubuntu
 MAINTAINER mwaeckerlin
-software-properties-common
+
 ENV SOURCE "download.owncloud.org/download/repositories/stable/Ubuntu_"
 RUN apt-get install -y wget
 RUN wget -nv https://${SOURCE}$(lsb_release -rs)/Release.key -O- | apt-key add -
