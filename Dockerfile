@@ -4,6 +4,8 @@
 FROM ubuntu
 MAINTAINER mwaeckerlin
 
+EXPOSE 80
+
 ENV SOURCE "download.owncloud.org/download/repositories/stable/Ubuntu_"
 RUN apt-get install -y wget
 RUN wget -nv https://${SOURCE}$(lsb_release -rs)/Release.key -O- | apt-key add -
