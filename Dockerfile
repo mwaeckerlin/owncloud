@@ -24,7 +24,7 @@ RUN sed -i \
 
 VOLUME /var/www/owncloud
 CMD sed -i \
-        -e 's,\(php_value *upload_max_filesize *\),\1'${UPLOAD_MAX_FILESIZE}',' \
-        -e 's,\(php_value *post_max_size *\),\1'${UPLOAD_MAX_FILESIZE}',' \
+        -e 's,\(php_value *upload_max_filesize *\).*,\1'${UPLOAD_MAX_FILESIZE}',' \
+        -e 's,\(php_value *post_max_size *\).*,\1'${UPLOAD_MAX_FILESIZE}',' \
         /var/www/owncloud/.htaccess && \
     apache2ctl -DFOREGROUND
