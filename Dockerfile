@@ -14,7 +14,7 @@ RUN apt-get install -y wget
 RUN wget -nv https://${SOURCE}$(lsb_release -rs)/Release.key -O- | apt-key add -
 RUN echo "deb http://${SOURCE}$(lsb_release -rs)/ /" > /etc/apt/sources.list.d/oc.list
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends owncloud owncloud-config-apache libreoffice-writer apache2 php5 php5-gd php5-curl php5-json php5-common php5-intl php-pear php-apc php-xml-parser libapache2-mod-php5 php5-mysqlnd mysql-client
+RUN apt-get install -y --no-install-recommends owncloud owncloud-config-apache libreoffice-writer apache2 php5 php5-gd php5-curl php5-json php5-common php5-intl php-pear php-apc php-xml-parser libapache2-mod-php5 php5-mysql mysql-client
 RUN sed -i '/Alias \/owncloud /d' /etc/apache2/conf-available/owncloud.conf
 RUN sed -i 's,DocumentRoot.*,DocumentRoot /var/www/owncloud,' /etc/apache2/sites-available/000-default.conf
 RUN sed -i
