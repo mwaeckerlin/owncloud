@@ -1,6 +1,9 @@
-# docker rm -f owncloud-mysql
-# docker run -d --name owncloud-mysql -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=owncloud -e MYSQL_USER=owncloud -e MYSQL_PASSWORD=123456 mysql
-# docker run --rm --name owncloud -it -p 80:80 --link owncloud-mysql:mysql ubuntu bash
+# Example use with volumes and MySQL database behind a reverse proxy:
+# docker run -d --name owncloud-mysql-volume mysql sleep infinity
+# docker run -d --name owncloud-volume mwaeckerlin/owncloud sleep infinity
+# docker run -d --name owncloud-mysql -e MYSQL_ROOT_PASSWORD=$(pwgen 20 1) -e MYSQL_DATABASE=owncloud -e MYSQL_USER=owncloud -e MYSQL_PASSWORD=$(pwgen 20 1) --volumes-from owncloud-mysql-volume mysql
+# docker run -d --name owncloud -e UPLOAD_MAX_FILESIZE=16G -e MAX_INPUT_TIME=7200 -e BASEPATH=/owncloud --volumes-from owncloud-volume --link owncloud-mysql:mysql mwaeckerlin/owncloud
+# docker run -d -p 80:80 -p 443:443 [...] --link owncloud:dev.marc.waeckerlin.org%2fowncloud mwaeckerlin/reverse-proxy
 FROM ubuntu
 MAINTAINER mwaeckerlin
 ENV TERM="xterm"
