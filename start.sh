@@ -27,16 +27,28 @@ if ! test -f config/config.php; then # initial run
     # install owncloud
     USER=${ADMIN_USER:-admin}
     PASS=${ADMIN_PWD:-$(pwgen 20 1)}
-    sudo -u www-data ./occ maintenance:install \
-        --database $(test -n "$MYSQL_ENV_MYSQL_PASSWORD" && echo mysql || echo sqlite) \
-        --database-name "${MYSQL_ENV_MYSQL_DATABASE}" \
-        --database-host "mysql" \
-        --database-user "$MYSQL_ENV_MYSQL_USER" \
-        --database-pass "$MYSQL_ENV_MYSQL_PASSWORD" \
-        --admin-user "${USER}" \
-        --admin-pass "${PASS}" \
-        --data-dir "${DATADIR}" \
-        --no-interaction
+    for ((i=10; i>0; --i)); do # database connection sometimes fails retry 10 times
+        if sudo -u www-data ./occ maintenance:install \
+            --database $(test -n "$MYSQL_ENV_MYSQL_PASSWORD" && echo mysql || echo sqlite) \
+            --database-name "${MYSQL_ENV_MYSQL_DATABASE}" \
+            --database-host "mysql" \
+            --database-user "$MYSQL_ENV_MYSQL_USER" \
+            --database-pass "$MYSQL_ENV_MYSQL_PASSWORD" \
+            --admin-user "${USER}" \
+            --admin-pass "${PASS}" \
+            --data-dir "${DATADIR}" \
+            --no-interaction; then
+            break
+        fi
+        echo "#### ERROR in installation; retry: $1" 1>&2
+        if test -f config/config.php; then
+            rm config/config.php
+        fi
+    done
+    if ! test -f config/config.php; then
+        echo "#### ERROR in installation, please analyse" 1>&2
+        sleep infinity
+    fi
     sudo -u www-data \
         sed -i '/$CONFIG = array (/a  '"'overwritewebroot'"' => '"'${BASEPATH}'"',' \
         config/config.php
@@ -47,7 +59,9 @@ if ! test -f config/config.php; then # initial run
         echo "************************************"
     fi
 else
-    sudo -u www-data ./occ upgrade --no-interaction
+    if ! sudo -u www-data ./occ upgrade --no-interaction; then
+        echo "#### ERROR in upgrade, please analyse" 1>&2        
+    fi
 fi
 
 apache2ctl -DFOREGROUND
