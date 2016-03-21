@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 cd $INSTDIR
 if ! test -f config/config.php; then # initial run
@@ -40,10 +40,11 @@ if ! test -f config/config.php; then # initial run
             --no-interaction; then
             break
         fi
-        echo "#### ERROR in installation; retry: $1" 1>&2
+        echo "#### ERROR in installation; retry: $i" 1>&2
         if test -f config/config.php; then
             rm config/config.php
         fi
+        sleep 5
     done
     if ! test -f config/config.php; then
         echo "#### ERROR in installation, please analyse" 1>&2
