@@ -9,11 +9,11 @@ if ! test -f config/config.php; then # initial run
     else
         sed -i 's,Alias *[^ ]* ,Alias '"$BASEPATH"' ,' /etc/apache2/conf-available/owncloud.conf
     fi
-    if ! grep -q php_value max_input_time $INSTDIR/.htaccess; then
+    if ! grep -q "php_value max_input_time" $INSTDIR/.htaccess; then
         sed -i '/php_value upload_max_filesize.*$/a  php_value max_input_time ${MAX_INPUT_TIME}' \
             $INSTDIR/.htaccess
     fi
-    if ! grep -q php_value max_execution_time $INSTDIR/.htaccess; then
+    if ! grep -q "php_value max_execution_time" $INSTDIR/.htaccess; then
         sed -i '/php_value upload_max_filesize.*$/a  php_value max_execution_time ${MAX_INPUT_TIME}' \
             $INSTDIR/.htaccess
     fi
