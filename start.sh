@@ -62,6 +62,6 @@ else
     fi
 fi
 
-#sudo -u www-data ./occ config:system:set overwritewebroot --value "${BASEPATH}"
+sudo -u www-data ./occ config:system:set overwritewebroot --value "${WEBROOT}"
 sudo -u www-data ./occ config:system:set trusted_domains 1 --value "${URL}"
 apache2ctl -DFOREGROUND
