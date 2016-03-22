@@ -50,9 +50,6 @@ if ! test -f config/config.php; then # initial run
         echo "#### ERROR in installation, please analyse" 1>&2
         sleep infinity
     fi
-    sudo -u www-data \
-        sed -i '/$CONFIG = array (/a  '"'overwritewebroot'"' => '"'${BASEPATH}'"',' \
-        config/config.php
     if test "$PASS" != "$ADMIN_PWD"; then
         echo "************************************"
         echo "admin-user:     $USER"
@@ -65,4 +62,6 @@ else
     fi
 fi
 
+sudo -u www-data ./occ config:system:set overwritewebroot --value "${BASEPATH}"
+sudo -u www-data ./occ config:system:set trusted_domains 1 --value "${URL}"
 apache2ctl -DFOREGROUND

@@ -14,6 +14,7 @@ ENV MAX_INPUT_TIME "3600"
 ENV BASEPATH ""
 ENV ADMIN_USER ""
 ENV ADMIN_PWD ""
+ENV URL "localhost"
 
 # compile time variables
 ENV INSTDIR "/var/www/owncloud"
