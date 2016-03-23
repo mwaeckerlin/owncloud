@@ -1,6 +1,24 @@
 #!/bin/bash -e
 
 cd $INSTDIR
+
+# download missing apps
+if test -n "$APPS"; then
+    for a in $APPS; do
+        if ! test -d apps/$a; then
+            cd apps
+            link=$(wget -O- -q https://github.com/owncloud/$a/releases \
+                   | sed -n 's,.*href="\(/[^"]*/'"$a"'/[^"]*\.tar\.gz\)".*,\1,p' \
+                   | sort -h | egrep -v 'beta|alpha|RC' | tail -1)
+            echo "download: $a from $link"
+            sudo -u www-data mkdir $a
+            wget -O- -q https://github.com$link \
+                | sudo -u www-data tar xz -C $a --strip-components 1
+            cd ..
+        fi
+    done
+fi
+
 if ! test -f config/config.php; then # initial run
     # configure apache
     if test -z "$BASEPATH" -o "$BASEPATH" = "/"; then
@@ -69,5 +87,10 @@ fi
 if test -n "$URL"; then
     sudo -u www-data ./occ config:system:set overwritehost --value "${URL}"
     sudo -u www-data ./occ config:system:set trusted_domains 1 --value "${URL}"
+fi
+if test -n "$APPS"; then
+    for a in $APPS; do
+        sudo -u www-data ./occ app:enable $a
+    done
 fi
 apache2ctl -DFOREGROUND

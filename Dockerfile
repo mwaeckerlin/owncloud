@@ -16,6 +16,10 @@ ENV WEBROOT ""
 ENV ADMIN_USER ""
 ENV ADMIN_PWD ""
 ENV URL "localhost"
+ENV APPS ""
+#ENV APPS "calendar contacts documents music news notes ownnote"
+#ENV APPS "announcementcenter calendar contacts documents encryption external files_antivirus files_external files_w2g mail music news notes ojsxc ownbackup ownnote shorten user_external"
+#ENV APPS "announcementcenter calendar contacts documents files_w2g music news notes ojsxc ownbackup ownnote"
 
 # compile time variables
 ENV INSTDIR "/var/www/owncloud"
@@ -28,9 +32,10 @@ RUN echo "deb http://${SOURCE}$(lsb_release -rs)/ /" > /etc/apt/sources.list.d/o
 RUN apt-get update
 RUN apt-cache search owncloud
 RUN cat  /etc/apt/sources.list.d/oc.list
-RUN apt-get install -y --no-install-recommends owncloud libreoffice-writer apache2 php5 php5-gd php5-curl php5-json php5-common php5-intl php-pear php-apc php-xml-parser libapache2-mod-php5 php5-mysqlnd mysql-client pwgen emacs24-nox
+RUN apt-get install -y --no-install-recommends owncloud libreoffice-writer apache2 php5 php5-gd php5-curl php5-json php5-common php5-intl php-pear php-apc php-xml-parser libapache2-mod-php5 php5-ldap php5-mysqlnd mysql-client pwgen emacs24-nox
 
 VOLUME $DATADIR
 VOLUME $CONFDIR
+WORKDIR $INSTDIR
 ADD start.sh /start.sh
 CMD /start.sh
