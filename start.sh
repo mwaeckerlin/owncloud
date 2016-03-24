@@ -75,8 +75,11 @@ if ! test -f config/config.php; then # initial run
         echo "************************************"
     fi
 else
-    if ! sudo -u www-data ./occ upgrade --no-interaction; then
-        echo "#### ERROR in upgrade, please analyse" 1>&2        
+    if ! sudo -u www-data ./occ upgrade --no-interaction && test $? -ne 3; then
+        if ! sudo -u www-data ./occ help maintenance:repair --no-interaction ||
+            ( ! sudo -u www-data ./occ upgrade --no-interaction && test $? -ne 3 ); then
+            echo "#### ERROR in upgrade, please analyse" 1>&2
+        fi
     fi
 fi
 
