@@ -85,6 +85,10 @@ else # upgrade owncloud
     fi
 fi
 
+cat > /etc/cron.d/owncloud <<EOF
+*/15  *  *  *  * www-data php -f $INSTDIR/cron.php
+EOF
+chmod +x /etc/cron.d/owncloud
 sudo -u www-data ./occ log:owncloud --file=/var/log/owncloud.log --enable
 if test -n "$WEBROOT"; then
     sudo -u www-data ./occ config:system:set overwritewebroot --value "${WEBROOT}"
@@ -98,4 +102,7 @@ if test -n "$APPS"; then
         sudo -u www-data ./occ app:enable $a
     done
 fi
+if test -f /run/apache2/apache2.pid; then
+    rm /run/apache2/apache2.pid;
+fi;
 apache2ctl -DFOREGROUND
