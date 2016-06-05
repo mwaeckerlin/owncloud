@@ -25,7 +25,7 @@ ENV APPS ""
 ENV INSTDIR "/var/www/owncloud"
 ENV DATADIR "/var/www/owncloud/data"
 ENV CONFDIR "/var/www/owncloud/config"
-ENV SOURCE "download.owncloud.org/download/repositories/8.2/Ubuntu_"
+ENV SOURCE "download.owncloud.org/download/repositories/stable/Ubuntu_"
 RUN apt-get update
 RUN apt-get install -y wget lsb-release
 RUN wget -nv https://${SOURCE}$(lsb_release -rs)/Release.key -O- | apt-key add -
