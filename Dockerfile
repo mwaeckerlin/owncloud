@@ -33,6 +33,7 @@ ENV URL ""
 ENV INSTDIR "/var/www/owncloud"
 ENV DATADIR "/var/www/owncloud/data"
 ENV CONFDIR "/var/www/owncloud/config"
+ENV APPSDIR "/var/www/owncloud/apps"
 ENV SOURCE "download.owncloud.org/download/repositories/stable/Ubuntu_"
 RUN apt-get update
 RUN apt-get install -y wget lsb-release language-pack-en
@@ -44,6 +45,7 @@ RUN test -f /etc/apache2/conf-available/owncloud.conf || apt-get install -y --no
 
 VOLUME $DATADIR
 VOLUME $CONFDIR
+VOLUME $APPSDIR
 WORKDIR $INSTDIR
 ADD start.sh /start.sh
 CMD /start.sh
