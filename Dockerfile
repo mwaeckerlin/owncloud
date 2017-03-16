@@ -4,10 +4,8 @@
 # docker run -d --name owncloud-mysql -e MYSQL_ROOT_PASSWORD=$(pwgen 20 1) -e MYSQL_DATABASE=owncloud -e MYSQL_USER=owncloud -e MYSQL_PASSWORD=$(pwgen 20 1) --volumes-from owncloud-mysql-volume mysql
 # docker run -d --name owncloud -e URL="example.com" -e UPLOAD_MAX_FILESIZE=16G -e MAX_INPUT_TIME=7200 -e BASEPATH=/owncloud --volumes-from owncloud-volume --link owncloud-mysql:mysql mwaeckerlin/owncloud
 # docker run -d -p 80:80 -p 443:443 [...] --link owncloud:dev.marc.waeckerlin.org%2fowncloud mwaeckerlin/reverse-proxy
-FROM ubuntu
+FROM mwaeckerlin/ubuntu-base
 MAINTAINER mwaeckerlin
-ENV TERM="xterm"
-ENV LANG "en_US.UTF-8"
 
 EXPOSE 80
 ENV UPLOAD_MAX_FILESIZE "8G"
@@ -35,12 +33,9 @@ ENV DATADIR "/var/www/owncloud/data"
 ENV CONFDIR "/var/www/owncloud/config"
 ENV APPSDIR "/var/www/owncloud/apps"
 ENV SOURCE "download.owncloud.org/download/repositories/stable/Ubuntu_"
-RUN apt-get update
-RUN apt-get install -y wget lsb-release language-pack-en
 RUN wget -nv https://${SOURCE}$(lsb_release -rs)/Release.key -O- | apt-key add -
 RUN echo "deb http://${SOURCE}$(lsb_release -rs)/ /" > /etc/apt/sources.list.d/oc.list
-RUN apt-get update
-RUN apt-get install -y owncloud php-ldap exim4 mysql-client pwgen emacs24-nox sudo
+RUN apt-get update && apt-get install -y owncloud php-ldap exim4 mysql-client pwgen sudo unzip
 RUN test -f /etc/apache2/conf-available/owncloud.conf || apt-get install -y --no-install-recommends owncloud-config-apache
 
 VOLUME $DATADIR
