@@ -118,6 +118,8 @@ else # upgrade owncloud
 fi
 
 sudo -u www-data ./occ log:owncloud --file=/proc/$$/fd/1 --enable
+# BUGFIX: https://github.com/owncloud/calendar/issues/800
+./occ config:system:set --value https://marketplace.owncloud.com/api/v0 appstoreurl
 if test -n "$WEBROOT"; then
     sudo -u www-data ./occ config:system:set overwritewebroot --value "${WEBROOT}"
 fi
