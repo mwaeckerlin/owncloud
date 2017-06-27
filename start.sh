@@ -28,6 +28,17 @@ max_input_time = ${MAX_INPUT_TIME}
 max_execution_time = ${MAX_INPUT_TIME}
 EOF
 
+if test -n "$MYSQL_ENV_MYSQL_PASSWORD"; then
+    # wait for mysql to become ready
+    for ((i=0; i<20; ++i)); do
+        if nmap -p ${MYSQL_PORT_3306_TCP_PORT} ${MYSQL_PORT_3306_TCP_ADDR} \
+            | grep -q ${MYSQL_PORT_3306_TCP_PORT}'/tcp open'; then
+            break;
+        fi
+        sleep 1
+    done
+fi
+
 # configure or update owncloud
 if ! test -s config/config.php; then # initial run
     # install owncloud
