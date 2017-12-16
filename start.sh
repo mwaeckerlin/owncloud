@@ -34,7 +34,7 @@ if ! test -s config/config.php; then # initial run
     USER=${ADMIN_USER:-admin}
     PASS=${ADMIN_PWD:-$(pwgen 20 1)}
     for ((i=10; i>0; --i)); do # database connection sometimes fails retry 10 times
-        if sudo -u www-data ./occ maintenance:install \
+        if sudo -Hu www-data ./occ maintenance:install \
             --database $(test -n "$MYSQL_ENV_MYSQL_PASSWORD" && echo mysql || echo sqlite) \
             --database-name "${MYSQL_ENV_MYSQL_DATABASE}" \
             --database-host "mysql" \
@@ -58,11 +58,11 @@ if ! test -s config/config.php; then # initial run
         sleep infinity
     fi
     # download and enable missing apps
-    ocver=$(sudo -u www-data ./occ -V | sed -n 's,^.*version \([.0-9]\+\).*$,\1,p')
+    ocver=$(sudo -Hu www-data ./occ -V | sed -n 's,^.*version \([.0-9]\+\).*$,\1,p')
     if test -n "$APPS"; then
         for a in $APPS; do
             if  [[ $a =~ ^- ]]; then
-                sudo -u www-data ./occ app:disable "${a#-}"
+                sudo -Hu www-data ./occ app:disable "${a#-}"
             else
                 if ! test -d "apps/${a%%:*}"; then
                     a="${a#+}"
@@ -97,19 +97,20 @@ if ! test -s config/config.php; then # initial run
                         exit 1
                     fi
                     echo "download: ${a%%:*} from ${base}${link}"
-                    sudo -u www-data mkdir "${a%%:*}"
+                    sudo -Hu www-data mkdir "${a%%:*}"
                     wget -O- -q ${base}${link} \
-                        | sudo -u www-data tar xz -C "${a%%:*}" --strip-components 1
+                        | sudo -Hu www-data tar xz -C "${a%%:*}" --strip-components 1
                     cd ..
                 fi
-                sudo -u www-data ./occ app:enable "${a%%:*}"
+                echo "enable app: ${a%%:*}"
+                sudo -Hu www-data ./occ app:enable "${a%%:*}"
             fi
         done
     fi
 else # upgrade owncloud
-    if ! (sudo -u www-data ./occ upgrade --no-interaction || test $? -eq 3); then
-        if ! sudo -u www-data ./occ maintenance:repair --no-interaction; then
-            if ! (sudo -u www-data ./occ upgrade --no-interaction || test $? -eq 3); then
+    if ! (sudo -Hu www-data ./occ upgrade --no-interaction || test $? -eq 3); then
+        if ! sudo -Hu www-data ./occ maintenance:repair --no-interaction; then
+            if ! (sudo -Hu www-data ./occ upgrade --no-interaction || test $? -eq 3); then
                 echo "#### ERROR in upgrade, please analyse" 1>&2
                 sleep infinity
             fi
@@ -117,13 +118,13 @@ else # upgrade owncloud
     fi
 fi
 
-sudo -u www-data ./occ log:owncloud --file=/proc/$$/fd/1 --enable
+sudo -Hu www-data ./occ log:owncloud --file=/proc/$$/fd/1 --enable
 if test -n "$WEBROOT"; then
-    sudo -u www-data ./occ config:system:set overwritewebroot --value "${WEBROOT}"
+    sudo -Hu www-data ./occ config:system:set overwritewebroot --value "${WEBROOT}"
 fi
 if test -n "$URL"; then
-    sudo -u www-data ./occ config:system:set overwritehost --value "${URL}"
-    sudo -u www-data ./occ config:system:set trusted_domains 1 --value "${URL}"
+    sudo -Hu www-data ./occ config:system:set overwritehost --value "${URL}"
+    sudo -Hu www-data ./occ config:system:set trusted_domains 1 --value "${URL}"
 fi
 
 cat > /etc/cron.d/owncloud <<EOF
