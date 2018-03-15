@@ -41,5 +41,3 @@ RUN test -f /etc/apache2/conf-available/owncloud.conf || apt-get install -y --no
 VOLUME $DATADIR
 VOLUME $CONFDIR
 WORKDIR $INSTDIR
-ADD start.sh /start.sh
-CMD /start.sh

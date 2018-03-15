@@ -27,6 +27,9 @@ post_max_size = ${UPLOAD_MAX_FILESIZE}
 max_input_time = ${MAX_INPUT_TIME}
 max_execution_time = ${MAX_INPUT_TIME}
 EOF
+for x in max_input_time max_execution_time upload_max_filesize post_max_size max_input_time max_execution_time; do
+    sed -i '/'$x'/d' /var/www/owncloud/.htaccess
+done
 
 if test -n "$MYSQL_ENV_MYSQL_PASSWORD"; then
     # wait for mysql to become ready
